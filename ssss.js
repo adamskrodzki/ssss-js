@@ -272,6 +272,10 @@
       return x
     }
 
+    P.mpz = mpz;
+
+    P.encodeMpz = encodeMpz
+
     /* evaluate polynomials efficiently */
 
     /**
@@ -335,6 +339,29 @@
       return 0
     }
 
+    P.reconstruct_from_2_of_n = function(prefix,s1,s2){
+        var lib = this;
+        var secretOut = new BN("0x"+lib.combine([s1,s2]));
+        var s1Index = s1.split("-")[s1.split("-").length-2];
+        if(s1Index!=="1"){
+            throw "s1 must be a shard number one ";
+        }
+        lib.init(256);
+        var s1Num = new BN("0x"+s1.split("-")[s1.split("-").length-1]);
+        var s2Num = new BN("0x"+s2.split("-")[s2.split("-").length-1]);
+        secretOut = lib.encodeMpz(secretOut, ENCODE, lib.getDegree());
+        var a = lib.field_add(s1Num,secretOut);
+        a = lib.mpz.xor(a,(new BN(1))) ;
+        var shards = [];
+        for(var i=1;i<=4;i++){
+            var value = lib.horner(2,i,[secretOut,a]).toString(16);
+            value = ("0".repeat(64)+value) ;
+            value = value.substr(value.length-64,64);
+            shards.push((prefix.length>0?prefix+"-":"")+i+"-"+value);
+        }
+        return shards;
+    }
+
     function pad (num, size, padding) {
       var s = num + ''
       return padding.repeat(size - s.length) + s
@@ -359,12 +386,21 @@
       this.poly = new BN(0)
     }
 
+    P.init = function(degree){
+        this.degree = degree;
+        this.poly = fieldInit(this.degree)
+    }
+
     /**
      * @param {String} buf The secret to encode
      * @param {String} token An optional text token used to name shares in order to
      * avoid confusion in case one utilizes secret sharing to protect several
      * independent secrets. The generated shares are prefixed by these tokens.
      */
+
+    P.getDegree = function(){
+        return this.degree;
+    }
     P.split = function (buf, token) {
       var x
       var y

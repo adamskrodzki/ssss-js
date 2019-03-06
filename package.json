@@ -4,7 +4,7 @@
   "description": "Shamir's Secret Sharing Scheme",
   "main": "ssss.js",
   "directories": {
-    "test": "test"
+    "test": "node_modules/qunit/bin/qunit.js"
   },
   "dependencies": {
     "bignumber.js": "^4.1.0"

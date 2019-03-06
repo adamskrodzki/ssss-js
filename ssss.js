@@ -122,6 +122,8 @@
       return mpz.xor(x, y)
     }
 
+    P.field_add = fieldAdd;
+
     P.field_mult = function (x, y) {
       var z
       var b = x
@@ -418,6 +420,8 @@
       return keys
     }
 
+    P.regenerateShard2_4 = function (threshold, shards) {
+    }
     /* Calculate the secret */
 
     P.combine = function (shares) {

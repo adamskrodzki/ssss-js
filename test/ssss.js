@@ -1,5 +1,14 @@
 /* global QUnit */
 var SSSS = require('../ssss.js')
+var BN = require('bignumber.js')
+
+QUnit.test('0 is zero', function (assert) {
+  var foo = new SSSS(2, 4)
+  var a = new BN("0x3982784893279afb8218093271749812309");
+  var zero = new BN("0");
+  var b = foo.field_add(a,zero);
+  assert.equal( a.toString(),  b.toString())
+})
 
 QUnit.test('encode decode short', function (assert) {
   var threshold = 4
